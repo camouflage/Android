@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">lab1</string>
+
+    <string name="welcome">Welcome to First Android Class!</string>
+    <string name="user">User: </string>
+    <string name="pwd">Password: </string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="action_settings">Settings</string>
+</resources>
