@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">lab1Extra</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="personalInfo">个人信息</string>
+    <string name="submit">提交</string>
+
+    <string-array name="dept">
+        <item>移动</item>
+        <item>软院</item>
+        <item>管理</item>
+        <item>政务</item>
+        <item>环境</item>
+    </string-array>
+
     <string name="action_settings">Settings</string>
 </resources>
