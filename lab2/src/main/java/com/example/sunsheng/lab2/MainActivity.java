@@ -4,11 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import android.content.*;
 
 public class MainActivity extends AppCompatActivity {
     private EditText user;
     private EditText pass;
     private ImageButton imgBtn;
+    private LinearLayout subLayout;
+    private Context mContext;
+    private Button btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,22 +22,66 @@ public class MainActivity extends AppCompatActivity {
         user = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
         imgBtn = (ImageButton) findViewById(R.id.imgBtn);
+        subLayout = (LinearLayout) this.findViewById(R.id.subLayout);
+        mContext = this;
+        btn = (Button) findViewById(R.id.btn);
 
-        LinearLayout LLayout = (LinearLayout) this.findViewById(R.id.mainLayout);
+        // Generate textview dynamically
         TextView tv = new TextView(this);
         tv.setText("这是动态添加的textView");
-        LLayout.addView(tv);
-        /*
+        subLayout.addView(tv);
+
         View.OnClickListener imgBtnListener = new View.OnClickListener() {
             public void onClick(View view) {
                 if ( user.getText().toString().equals("LeiBusi") && pass.getText().toString().equals("Halo3Q") ) {
                     user.setVisibility(View.GONE);
                     pass.setVisibility(View.GONE);
-                    imgBtn.setImageDrawable(getResources().getDrawable(R.mipmap.state2));
+                    imgBtn.setImageResource(R.mipmap.state2);
+                } else {
+                    user.setText("LeiBusi");
+                    pass.setText("");
+                    pass.setHint("帐号或密码错误");
+                    pass.requestFocus();
+
+                    Toast toast = Toast.makeText(mContext, "密码错误", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                    toast.show();
                 }
             }
         };
-        */
+
+        View.OnLongClickListener imgBtnLongListener = new View.OnLongClickListener() {
+            public boolean onLongClick(View view) {
+                TextView tv = new TextView(mContext);
+                tv.setText("这是动态添加的textView");
+                subLayout.addView(tv);
+                return true;
+            }
+        };
+
+        View.OnClickListener btnListener = new View.OnClickListener() {
+            public void onClick(View view) {
+                user.setText("");
+                pass.setText("");
+                pass.setHint("请输入密码");
+                user.setVisibility(View.VISIBLE);
+                pass.setVisibility(View.VISIBLE);
+                user.requestFocus();
+                imgBtn.setImageResource(R.mipmap.state1);
+
+                if ( subLayout.getChildCount() > 0 ) {
+                    subLayout.removeAllViews();
+                }
+
+                TextView tv = new TextView(mContext);
+                tv.setText("这是动态添加的textView");
+                subLayout.addView(tv);
+            }
+        };
+
+        imgBtn.setOnClickListener(imgBtnListener);
+        imgBtn.setOnLongClickListener(imgBtnLongListener);
+        btn.setOnClickListener(btnListener);
     }
 
     @Override
