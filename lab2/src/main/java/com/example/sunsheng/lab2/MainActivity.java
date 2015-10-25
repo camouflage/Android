@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout subLayout;
     private Context mContext;
     private Button btn;
+    private Button extensionBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         subLayout = (LinearLayout) this.findViewById(R.id.subLayout);
         mContext = this;
         btn = (Button) findViewById(R.id.btn);
+        extensionBtn = (Button) findViewById(R.id.extensionBtn);
 
         // Generate textview dynamically
         TextView tv = new TextView(this);
@@ -79,9 +81,17 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        View.OnClickListener extensionBtnListener = new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent Extra = new Intent(MainActivity.this, Extra.class);
+                startActivity(Extra);
+            }
+        };
+
         imgBtn.setOnClickListener(imgBtnListener);
         imgBtn.setOnLongClickListener(imgBtnLongListener);
         btn.setOnClickListener(btnListener);
+        extensionBtn.setOnClickListener(extensionBtnListener);
     }
 
     @Override
