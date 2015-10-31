@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             fruitList.add(new Fruit(fruits[i], image[i]));
         }
 
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         for ( Fruit f:fruitList ) {
             Map<String, Object> item = new HashMap<String, Object>();
             item.put("image", f.getImage());
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             items.add(item);
         }
 
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, items,
+        final SimpleAdapter simpleAdapter = new SimpleAdapter(this, items,
                 R.layout.fruit, new String[] { "image", "name" },
                 new int[] { R.id.imageId, R.id.name });
 
@@ -56,6 +56,15 @@ public class MainActivity extends AppCompatActivity {
                 info.putString("name", fruit);
                 second.putExtras(info);
                 startActivity(second);
+            }
+        });
+
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                items.remove(position);
+                simpleAdapter.notifyDataSetChanged();
+                return true;
             }
         });
 
