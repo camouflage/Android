@@ -3,6 +3,7 @@ package com.example.sunsheng.lab5;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,11 +11,13 @@ import android.widget.*;
 import android.content.*;
 
 import java.text.SimpleDateFormat;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
     private MusicService ms;
     private SimpleDateFormat date = new SimpleDateFormat("m:ss");
     private SeekBar sb;
+    private TextView time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,16 +25,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button play = (Button) findViewById(R.id.play);
-        Button stop = (Button) findViewById(R.id.play);
-        Button quit = (Button) findViewById(R.id.play);
+        Button stop = (Button) findViewById(R.id.stop);
+        Button quit = (Button) findViewById(R.id.quit);
+        // http://stackoverflow.com/questions/17002666/unable-to-instantiate-activity-componentinfo-error-checked-manifest
         sb = (SeekBar) findViewById(R.id.sb);
+        time = (TextView) findViewById(R.id.time);
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ms.play();
                 TextView tv = (TextView) findViewById(R.id.tv);
-                TextView time = (TextView) findViewById(R.id.time);
 
                 if ( ms.mp.isPlaying() ) {
                     tv.setText("Playing");
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 time.setText(date.format(ms.mp.getCurrentPosition()) + "/" + date.format(ms.mp.getDuration()));
                 sb.setProgress(ms.mp.getCurrentPosition());
                 sb.setMax(ms.mp.getDuration());
+                handler.post(r);
             }
         });
 
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         quit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                handler.removeCallbacks(r);
                 unbindService(sc);
                 try {
                     System.exit(0);
@@ -80,6 +86,34 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Handler handler = new Handler();
+    // http://www.scriptscoop.net/t/b9995e851693/java-android-updating-seekbar-with-handler-and-runnable.html
+    private Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            time.setText(date.format(ms.mp.getCurrentPosition()) + "/" + date.format(ms.mp.getDuration()));
+            sb.setProgress(ms.mp.getCurrentPosition());
+            sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        ms.mp.seekTo(seekBar.getProgress());
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            handler.postDelayed(r, 1000);
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

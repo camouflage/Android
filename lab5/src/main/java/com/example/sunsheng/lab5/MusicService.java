@@ -7,12 +7,15 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 
+import android.util.Log;
+
 public class MusicService extends Service {
     public static MediaPlayer mp = new MediaPlayer();
 
     public MusicService() {
         try {
-            mp.setDataSource(Environment.getExternalStorageDirectory() + "/data/You.mp3");
+            //mp.setDataSource(Environment.getExternalStorageDirectory().toString() + "/Android/data/You.mp3");
+            mp.setDataSource("/data/You.mp3");
             mp.prepare();
         } catch (Exception e) {
             e.printStackTrace();
