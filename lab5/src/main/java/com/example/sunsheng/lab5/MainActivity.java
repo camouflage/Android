@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TextView tv = (TextView) findViewById(R.id.tv);
+                tv.setText("Stopped");
                 ms.stop();
             }
         });
