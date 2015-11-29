@@ -15,11 +15,15 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class MainActivity extends AppCompatActivity {
     String rememberedUser = null;
     String rememberedPassword = null;
     TextView user;
     TextView password;
+    MessageDigest messageDigest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,20 +46,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                // allow multiple users
-                String filledUser = user.getText().toString();
-                String realPassword = sharedPreferences.getString(filledUser, "$DEFAULT$");
-                if ( !realPassword.equals("$DEFAULT$") ) {
-                    Toast toast = Toast.makeText(mContext, "Register fails(User exists)", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                    toast.show();
-                } else {
-                    editor.putString(user.getText().toString(), password.getText().toString());
-                    editor.commit();
+                try {
+                    String filledUser = user.getText().toString();
+                    String realPassword = sharedPreferences.getString(filledUser, "$DEFAULT$");
+                    String defaultPassword = "$DEFAULT$";
 
-                    Toast toast = Toast.makeText(mContext, "Register succeeds", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                    toast.show();
+                    messageDigest = MessageDigest.getInstance("MD5");
+                    messageDigest.update(realPassword.getBytes());
+                    byte[] realPasswordMD5 = messageDigest.digest();
+                    messageDigest.update(defaultPassword.getBytes());
+                    byte[] defaultPasswordMD5 = messageDigest.digest();
+
+                    // allow multiple users
+                    if ( !MessageDigest.isEqual(realPasswordMD5, defaultPasswordMD5) ) {
+                        Toast toast = Toast.makeText(mContext, "Register fails(User exists)", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                        toast.show();
+                    } else {
+                        String filledPassword = password.getText().toString();
+                        messageDigest.update(filledPassword.getBytes());
+                        byte[] filledPasswordMD5 = messageDigest.digest();
+
+                        editor.putString(user.getText().toString(), new String(filledPasswordMD5));
+                        editor.commit();
+
+                        Toast toast = Toast.makeText(mContext, "Register succeeds", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                        toast.show();
+                    }
+
+                } catch ( NoSuchAlgorithmException e ) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -66,28 +87,31 @@ public class MainActivity extends AppCompatActivity {
                 String filledUser = user.getText().toString();
                 String filledPassword = password.getText().toString();
                 String realPassword = sharedPreferences.getString(filledUser, "$DEFAULT$");
-                if ( realPassword.equals("$DEFAULT$") || !filledPassword.equals(realPassword) ) {
-                    Toast toast = Toast.makeText(mContext, "Login Error", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                    toast.show();
-                } else {
-                    Intent intent = new Intent(MainActivity.this, EditFileActivity.class);
-                    startActivity(intent);
+                String defaultPassword = "$DEFAULT$";
+
+                try {
+                    messageDigest = MessageDigest.getInstance("MD5");
+                    messageDigest.update(defaultPassword.getBytes());
+                    byte[] defaultPasswordMD5 = messageDigest.digest();
+                    messageDigest.update(filledPassword.getBytes());
+                    byte[] filledPasswordMD5 = messageDigest.digest();
+
+                    if ( realPassword.equals(new String(defaultPasswordMD5))
+                            || !realPassword.equals(new String(filledPasswordMD5)) ) {
+                        Toast toast = Toast.makeText(mContext, "Login Error", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                        toast.show();
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, EditFileActivity.class);
+                        startActivity(intent);
+                    }
+
+                } catch ( NoSuchAlgorithmException e ) {
+                    e.printStackTrace();
                 }
 
             }
         });
-        /*
-        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if ( !isChecked ) {
-                    user.setText("");
-                    password.setText("");
-                }
-            }
-        });
-        */
     }
 
     @Override
