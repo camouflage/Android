@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 String filledUser = user.getText().toString();
                 String realPassword = sharedPreferences.getString(filledUser, "$DEFAULT$");
                 if ( !realPassword.equals("$DEFAULT$") ) {
-                    Toast toast = Toast.makeText(mContext, "Register failed(User exists)", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(mContext, "Register fails(User exists)", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
                     toast.show();
                 } else {
