@@ -116,15 +116,8 @@ public class MainActivity extends AppCompatActivity {
                     // message.obj = parsePull(response.toString());
                     message.obj = parseDom(response.toString());
 
-                    // http://stackoverflow.com/questions/25342706/using-handler-to-change-ui-still-only-the-original-thread-that-created-a-view
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            handler.handleMessage(message);
-                        }
-                    });
-
-
+                    handler.sendMessage(message);
+                    
                 } catch ( IOException e ) {
                     e.printStackTrace();
                 } finally {
@@ -136,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    // http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html
     private String parsePull(String xml) {
         String str = "";
         try {
