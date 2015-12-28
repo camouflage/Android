@@ -8,6 +8,9 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  * Created by sunsheng on 12/19/15.
@@ -31,7 +34,7 @@ public class AutoCode implements Runnable {
 
         try {
             transportSE.call(SOAPACTION, envelope);
-        } catch ( Exception e ) {
+        }  catch ( Exception e ) {
             e.printStackTrace();
         }
 

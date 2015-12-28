@@ -20,6 +20,9 @@ import android.widget.Toast;
 
 import java.util.Random;
 
+//http://stackoverflow.com/questions/11590382/android-view-windowleaked
+// For android.view.WindowLeaked
+
 public class MainActivity extends AppCompatActivity {
     private static ImageView img;
     public static String code;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         code = getRandomString();
         progressDialog = ProgressDialog.show(MainActivity.this, "Please wait", "Loading code picture", true);
+
         new Thread(new AutoCode()).start();
 
         newCode.setOnClickListener(new View.OnClickListener() {
@@ -95,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     @Override
