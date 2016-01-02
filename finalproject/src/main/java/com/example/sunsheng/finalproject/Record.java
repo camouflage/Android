@@ -1,6 +1,5 @@
 package com.example.sunsheng.finalproject;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -10,11 +9,14 @@ import com.sina.cloudstorage.auth.AWSCredentials;
 import com.sina.cloudstorage.auth.BasicAWSCredentials;
 import com.sina.cloudstorage.services.scs.SCS;
 import com.sina.cloudstorage.services.scs.SCSClient;
-import com.sina.cloudstorage.services.scs.model.ObjectListing;
-import com.sina.cloudstorage.services.scs.model.PutObjectResult;
+import com.sina.cloudstorage.services.scs.model.S3Object;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by sunsheng on 1/1/16.
@@ -29,11 +31,6 @@ public class Record {
         conn = new SCSClient(credentials);
     }
 
-    public void listObjects() {
-        ObjectListing objectListing = conn.listObjects("record");
-        Log.e("obj", "" + objectListing);
-    }
-
     public void upload(String path, int id) {
         File localFile = new File(path);
         if ( localFile.exists() ){
@@ -42,6 +39,45 @@ public class Record {
             Log.e("Upload", "Failed to upload the file");
         }
     };
+
+    public void download(String path, int id) {
+        File destFile = new File(path);
+        if ( destFile.exists() ) {
+            return;
+        }
+
+        S3Object s3Obj = conn.getObject("record", "" + id);
+        InputStream in = s3Obj.getObjectContent();
+        byte[] buf = new byte[1024];
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(destFile);
+            int count;
+            while( (count = in.read(buf)) != -1) {
+                if( Thread.interrupted() ) {
+                    throw new InterruptedException();
+                }
+                out.write(buf, 0, count);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally{
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // Return true if SDCard exists.
     public boolean isSDCardExist() {
