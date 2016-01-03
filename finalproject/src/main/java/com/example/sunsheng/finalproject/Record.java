@@ -92,6 +92,7 @@ public class Record {
         try {
             if ( recorder == null ) {
                 recorder = new MediaRecorder();
+                recorder.setMaxDuration(30000);
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -111,6 +112,14 @@ public class Record {
             recorder.release();
             recorder = null;
         }
+    }
+
+    public double getAmplitude() {
+        if ( recorder != null )
+            return  ( recorder.getMaxAmplitude() / 2700.0 );
+        else
+            return 0;
+
     }
 
     private MediaPlayer mediaPlayer = null;

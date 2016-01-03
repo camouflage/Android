@@ -1,15 +1,20 @@
 package com.example.sunsheng.finalproject;
 
 import android.app.ProgressDialog;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class RecordActivity extends AppCompatActivity {
     private Record record = new Record();
@@ -30,11 +35,11 @@ public class RecordActivity extends AppCompatActivity {
             Log.e("Record", "SD card does not exist!");
         }
 
-        Button confirm = (Button) findViewById(R.id.confirm);
+        final ImageButton confirm = (ImageButton) findViewById(R.id.confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( record == null ) {
+                if (record == null) {
                     return;
                 }
 
@@ -47,6 +52,7 @@ public class RecordActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     progressDialog.dismiss();
+                                    confirm.setVisibility(View.INVISIBLE);
                                 }
                             });
                             Log.e("upload", id + "");
@@ -57,6 +63,8 @@ public class RecordActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     progressDialog.dismiss();
+                                    Toast.makeText(RecordActivity.this, "Fail to upload the audio, please check your network",
+                                            Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -68,17 +76,28 @@ public class RecordActivity extends AppCompatActivity {
             }
         });
 
+        final ImageView voice = (ImageView) findViewById(R.id.voice);
         ImageButton start = (ImageButton) findViewById(R.id.start);
         start.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if ( event.getAction() == MotionEvent.ACTION_DOWN ) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     fileName = fileNamePrefix + id + ".3gp";
                     record.startRecording(fileName);
+                    // http://blog.csdn.net/qinde025/article/details/6828723
+                    // Delay 1s.
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            voice.setVisibility(View.VISIBLE);
+                        }
+                    }, 800);
+
                     Log.e("bt", "pressed!");
                 }
-                if ( event.getAction() == MotionEvent.ACTION_UP ) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     record.stopRecording();
+                    confirm.setVisibility(View.VISIBLE);
+                    voice.setVisibility(View.INVISIBLE);
                     record.startPlaying(fileName);
                     Log.e("bt", "released!");
                 }
@@ -121,6 +140,7 @@ public class RecordActivity extends AppCompatActivity {
                 progressDialog = ProgressDialog.show(RecordActivity.this, "Downloading", "Please wait...");
             }
         });
+
 
     }
 
