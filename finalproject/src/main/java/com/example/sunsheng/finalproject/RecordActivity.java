@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class RecordActivity extends AppCompatActivity {
@@ -78,27 +76,32 @@ public class RecordActivity extends AppCompatActivity {
 
         final ImageView voice = (ImageView) findViewById(R.id.voice);
         ImageButton start = (ImageButton) findViewById(R.id.start);
+        start.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                fileName = fileNamePrefix + id + ".3gp";
+                record.startRecording(fileName);
+                voice.setVisibility(View.VISIBLE);
+                confirm.setVisibility(View.INVISIBLE);
+                Log.e("bt", "pressed!");
+                return true;
+            }
+        });
+
         start.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    fileName = fileNamePrefix + id + ".3gp";
-                    record.startRecording(fileName);
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    voice.setVisibility(View.INVISIBLE);
                     // http://blog.csdn.net/qinde025/article/details/6828723
-                    // Delay 1s.
+                    // Delay 880ms.
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
-                            voice.setVisibility(View.VISIBLE);
+                            record.stopRecording();
+                            confirm.setVisibility(View.VISIBLE);
+                            record.startPlaying(fileName);
                         }
                     }, 800);
-
-                    Log.e("bt", "pressed!");
-                }
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    record.stopRecording();
-                    confirm.setVisibility(View.VISIBLE);
-                    voice.setVisibility(View.INVISIBLE);
-                    record.startPlaying(fileName);
                     Log.e("bt", "released!");
                 }
                 return false;
