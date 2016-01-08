@@ -2,7 +2,6 @@ package com.example.sunsheng.finalproject;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.util.Log;
 
 import com.sina.cloudstorage.auth.AWSCredentials;
@@ -80,12 +79,6 @@ public class Record {
         }
     }
 
-    // Return true if SDCard exists.
-    public boolean isSDCardExist() {
-        return Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED);
-    }
-
     private MediaRecorder recorder = null;
     // http://developer.android.com/reference/android/media/MediaRecorder.html
     // http://developer.android.com/guide/topics/media/audio-capture.html
@@ -133,10 +126,4 @@ public class Record {
             mediaPlayer = null;
         }
     }
-
-    public boolean deleteRecording(String path) {
-        File file = new File(path);
-        return file.delete();
-    }
-
 }

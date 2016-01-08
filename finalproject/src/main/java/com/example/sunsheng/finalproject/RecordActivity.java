@@ -19,7 +19,7 @@ public class RecordActivity extends AppCompatActivity {
     private Record record = new Record();
     String fileNamePrefix;
     String fileName;
-    String id;
+    String id = "test";
     private ProgressDialog progressDialog;
 
     @Override
@@ -28,11 +28,9 @@ public class RecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         record.init();
-        fileNamePrefix = RecordActivity.this.getExternalFilesDir(null).toString() + "/";
 
-        if ( !record.isSDCardExist() ) {
-            Log.e("Record", "SD card does not exist!");
-        }
+        fileNamePrefix = RecordActivity.this.getFilesDir() + "/";
+        Log.e("prefix", fileNamePrefix);
 
         final ImageButton confirm = (ImageButton) findViewById(R.id.confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -54,8 +52,8 @@ public class RecordActivity extends AppCompatActivity {
                                     confirm.setVisibility(View.INVISIBLE);
                                 }
                             });
-                            Log.e("upload", id + "");
-                            id += 1;
+                            Log.e("upload", id);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                             RecordActivity.this.runOnUiThread(new Runnable() {
