@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -18,7 +19,7 @@ public class RecordActivity extends AppCompatActivity {
     private Record record = new Record();
     String fileNamePrefix;
     String fileName;
-    int id = 1;
+    String id;
     private ProgressDialog progressDialog;
 
     @Override
@@ -112,13 +113,16 @@ public class RecordActivity extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fileName = fileNamePrefix + "1.3gp";
+                EditText et = (EditText) findViewById(R.id.et);
+                id = et.getText().toString();
+                fileName = fileNamePrefix + id + ".3gp";
+                Log.e("Mid", fileName);
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             //Log.e("before", "before");
-                            record.download(fileName, 1);
+                            record.download(fileName, id);
                             RecordActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -133,6 +137,8 @@ public class RecordActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     progressDialog.dismiss();
+                                    Toast.makeText(RecordActivity.this, "Fail to download the audio, please check your network",
+                                            Toast.LENGTH_LONG).show();
                                 }
                             });
                         }

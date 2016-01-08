@@ -23,6 +23,7 @@ import java.io.OutputStream;
  */
 public class Record {
     private SCS conn;
+    String id;
 
     public void init() {
         String accessKey = "uoc0ehVj2EqsgU7IMpHS";
@@ -31,22 +32,22 @@ public class Record {
         conn = new SCSClient(credentials);
     }
 
-    public void upload(String path, int id) {
+    public void upload(String path, String id) {
         File localFile = new File(path);
         if ( localFile.exists() ){
-            conn.putObject("record", "" + id, localFile);
+            conn.putObject("record", id, localFile);
         } else {
             Log.e("Upload", "Failed to upload the file");
         }
     };
 
-    public void download(String path, int id) {
+    public void download(String path, String id) {
         File destFile = new File(path);
         if ( destFile.exists() ) {
             return;
         }
 
-        S3Object s3Obj = conn.getObject("record", "" + id);
+        S3Object s3Obj = conn.getObject("record", id);
         InputStream in = s3Obj.getObjectContent();
         byte[] buf = new byte[1024];
         OutputStream out = null;
@@ -112,14 +113,6 @@ public class Record {
             recorder.release();
             recorder = null;
         }
-    }
-
-    public double getAmplitude() {
-        if ( recorder != null )
-            return  ( recorder.getMaxAmplitude() / 2700.0 );
-        else
-            return 0;
-
     }
 
     private MediaPlayer mediaPlayer = null;
